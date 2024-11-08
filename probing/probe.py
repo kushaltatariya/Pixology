@@ -9,7 +9,7 @@ from tqdm import tqdm
 from splitclassifier import SplitClassifier
 
 
-class Probing:
+class Probe:
     def __init__(self, task, params, batcher, layer):
         self.seed = "1111"
         self.params = params

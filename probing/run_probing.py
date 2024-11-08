@@ -6,7 +6,7 @@ import math
 from pixel import ViTModel, get_transforms, PangoCairoTextRenderer, get_attention_mask, PIXELConfig, \
     PangoCairoBigramsRenderer, glue_strip_spaces
 from transformers import AutoTokenizer, AutoModel, AutoConfig
-from probing import Probing
+from probe import Probe
 
 
 def resize_model_embeddings(model: ViTModel, max_seq_length: int) -> None:
@@ -251,11 +251,11 @@ if __name__ == "__main__":
               'model_name': args.model_name, 'seed': args.seed}
 
     for task in tasks[task_index]:
-        probe = Probing(params=params, batcher=batcher, task=task, layer=args.layer)
+        probe = Probe(params=params, batcher=batcher, task=task, layer=args.layer)
         results = probe.run(params=params, batcher=batcher, task=task)
 
-        # with open(f"{args.model_name}_{task}.pickle", 'wb') as handle:
-        #     pickle.dump(results, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        with open(f"{args.model_name}-{task}-layer_{args.layer}.pickle", 'wb') as handle:
+            pickle.dump(results, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
 
