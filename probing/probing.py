@@ -100,13 +100,13 @@ class Probing:
 
                 devacc, testacc, predictions = clf.run()
                 results[layer] = (devacc, testacc, predictions)
-                print(('\nDev acc : %.1f Test acc : %.1f for %s classification\n' % (results[layer][0], results[layer][1], self.task.upper())))
-
+                print(f"Dev acc : {devacc} Test acc : {testacc} on {layer} for {self.task}")
         else:
+            layer = int(self.layer)
             print(f"Training classifier on embeddings from layer {self.layer}...")
-            clf = SplitClassifier(X={'train': task_embed['train']['X'][self.layer],
-                                     'valid': task_embed['dev']['X'][self.layer],
-                                     'test': task_embed['test']['X'][self.layer]},
+            clf = SplitClassifier(X={'train': task_embed['train']['X'][layer],
+                                     'valid': task_embed['dev']['X'][layer],
+                                     'test': task_embed['test']['X'][layer]},
                                   y={'train': task_embed['train']['y'],
                                      'valid': task_embed['dev']['y'],
                                      'test': task_embed['test']['y']},
@@ -114,6 +114,6 @@ class Probing:
 
             devacc, testacc, predictions = clf.run()
             results[self.layer] = (devacc, testacc, predictions)
-            print(('\nDev acc : %.1f Test acc : %.1f for %s classification\n' % (results[self.layer][0], results[self.layer][1], self.task.upper())))
+            print(f"Dev acc : {devacc} Test acc : {testacc} on layer {self.layer} for {self.task}")
 
         return results

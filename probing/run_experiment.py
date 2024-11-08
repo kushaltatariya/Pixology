@@ -138,7 +138,7 @@ if __name__ == "__main__":
                         choices=["visual", "linguistic"])
     parser.add_argument("--data_dir", default="data/", type=str,
                         help="Path to probing data directory")
-    parser.add_argument("--layer", default=12, type=int,
+    parser.add_argument("--layer", default=12, type=str,
                         help="Which layer to probe on. Mention 'all' to probe on all layers")
     parser.add_argument("--seed", default=1111, type=int,
                         help="which seed to use")
