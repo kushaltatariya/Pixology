@@ -50,7 +50,7 @@ class Probing:
         task_embed = {'train': {}, 'dev': {}, 'test': {}}
         bsize = params["batch_size"]
 
-        print('Computing embeddings for train/dev/test for ' + str(self.task).upper())
+        print(f'Computing embeddings for train/dev/test for {self.task}')
 
         for key in self.task_data:
             indexes = list(range(len(self.task_data[key]['y'])))
@@ -90,6 +90,7 @@ class Probing:
 
         results = {}
         for layer in tqdm(range(1, 13)):
+            print(f"Training classifier on embeddings from layer {layer}...")
             clf = SplitClassifier(X={'train': task_embed['train']['X'][layer],
                                      'valid': task_embed['dev']['X'][layer],
                                      'test': task_embed['test']['X'][layer]},

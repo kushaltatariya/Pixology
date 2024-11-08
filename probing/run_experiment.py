@@ -134,8 +134,10 @@ if __name__ == "__main__":
     ## Required parameters
     parser.add_argument("--model_name", default="pixel", type=str,
                         help="the name of transformer model to evaluate on")
-    parser.add_argument("--language", default=None, type=str,
-                        choices=["Visual", "English"])
+    parser.add_argument("--probe", default=None, type=str,
+                        choices=["visual", "linguistic"])
+    parser.add_argument("--data_dir", default="data/", type=str,
+                        help="Path to probing data directory")
     parser.add_argument("--seed", default=1111, type=int,
                         help="which seed to use")
     parser.add_argument("--max_seq_length", default=256, type=int,
@@ -238,14 +240,12 @@ if __name__ == "__main__":
          ]
     ]
 
-    if args.language == "English":
-        task_dir = "data/probing/"
+    if args.probe == "linguistic":
         task_index = 0
-    elif args.language == "Visual":
-        task_dir = "data/probing/Visual"
+    elif args.probe == "visual":
         task_index = 1
 
-    params = {'task_dir': task_dir, 'usepytorch': True, 'kfold': 10, 'batch_size': 16,
+    params = {'task_dir': args.data_dir, 'usepytorch': True, 'kfold': 10, 'batch_size': 16,
               'tokenizer': tokenizer, 'model': model,
               'model_name': args.model_name, 'seed': args.seed}
 
@@ -253,8 +253,8 @@ if __name__ == "__main__":
         probe = Probing(params=params, batcher=batcher, task=task)
         results = probe.run(params=params, batcher=batcher, task=task)
 
-        with open(f"examples/{args.model_name}/{args.model_name}_{task}.pickle", 'wb') as handle:
-            pickle.dump(results, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        # with open(f"{args.model_name}_{task}.pickle", 'wb') as handle:
+        #     pickle.dump(results, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
 
