@@ -247,11 +247,11 @@ if __name__ == "__main__":
         task_index = 1
 
     params = {'task_dir': args.data_dir, 'usepytorch': True, 'kfold': 10, 'batch_size': 16,
-              'tokenizer': tokenizer, 'model': model, 'layer': args.layer,
+              'tokenizer': tokenizer, 'model': model,
               'model_name': args.model_name, 'seed': args.seed}
 
     for task in tasks[task_index]:
-        probe = Probing(params=params, batcher=batcher, task=task)
+        probe = Probing(params=params, batcher=batcher, task=task, layer=args.layer)
         results = probe.run(params=params, batcher=batcher, task=task)
 
         # with open(f"{args.model_name}_{task}.pickle", 'wb') as handle:
