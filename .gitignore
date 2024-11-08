@@ -1,5 +1,7 @@
 # data
 data/
+# bash
+*.sh
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
