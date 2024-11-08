@@ -138,6 +138,8 @@ if __name__ == "__main__":
                         choices=["visual", "linguistic"])
     parser.add_argument("--data_dir", default="data/", type=str,
                         help="Path to probing data directory")
+    parser.add_argument("--layer", default=12, type=int,
+                        help="Which layer to probe on. Mention 'all' to probe on all layers")
     parser.add_argument("--seed", default=1111, type=int,
                         help="which seed to use")
     parser.add_argument("--max_seq_length", default=256, type=int,
@@ -170,7 +172,6 @@ if __name__ == "__main__":
         model.eval()
 
     else:
-
         access_token = args.auth
         if args.model_name == "pixel-words-ud":
             args.max_seq_length = 196
@@ -246,7 +247,7 @@ if __name__ == "__main__":
         task_index = 1
 
     params = {'task_dir': args.data_dir, 'usepytorch': True, 'kfold': 10, 'batch_size': 16,
-              'tokenizer': tokenizer, 'model': model,
+              'tokenizer': tokenizer, 'model': model, 'layer': args.layer,
               'model_name': args.model_name, 'seed': args.seed}
 
     for task in tasks[task_index]:

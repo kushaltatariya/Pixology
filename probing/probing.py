@@ -10,12 +10,12 @@ from splitclassifier import SplitClassifier
 
 
 class Probing:
-    def __init__(self, task, params, batcher):
+    def __init__(self, task, params, batcher, layer):
         self.seed = "1111"
         self.params = params
         self.batcher = batcher
         self.task = task
-
+        self.layer = layer
         self.task_data = {'train': {'X': [], 'y': []},
                           'dev': {'X': [], 'y': []},
                           'test': {'X': [], 'y': []}}
@@ -71,10 +71,8 @@ class Probing:
                 embs = batcher(params, batch, task)
                 for k, v in embs.items():
                     layer_embs[k].append(embs[k])
-                    # task_embed[split]['X'].append(embs)
             for layer in range(1, 13):
                 task_embed[key]['X'][layer] = np.vstack(layer_embs[layer])
-                # task_embed[split]['X'] = np.vstack(task_embed[split]['X'])
                 task_embed[key]['y'] = np.array(self.task_data[key]['y'])
                 task_embed[key]['idx'] = np.array(indexes)
         print("Computed embeddings!")
@@ -89,21 +87,33 @@ class Probing:
                              'classifier': params_classifier}
 
         results = {}
-        for layer in tqdm(range(1, 13)):
-            print(f"Training classifier on embeddings from layer {layer}...")
-            clf = SplitClassifier(X={'train': task_embed['train']['X'][layer],
-                                     'valid': task_embed['dev']['X'][layer],
-                                     'test': task_embed['test']['X'][layer]},
+        if self.layer == 'all':
+            for layer in tqdm(range(1, 13)):
+                print(f"Training classifier on embeddings from layer {layer}...")
+                clf = SplitClassifier(X={'train': task_embed['train']['X'][layer],
+                                         'valid': task_embed['dev']['X'][layer],
+                                         'test': task_embed['test']['X'][layer]},
+                                      y={'train': task_embed['train']['y'],
+                                         'valid': task_embed['dev']['y'],
+                                         'test': task_embed['test']['y']},
+                                      config=config_classifier)
+
+                devacc, testacc, predictions = clf.run()
+                results[layer] = (devacc, testacc, predictions)
+                print(('\nDev acc : %.1f Test acc : %.1f for %s classification\n' % (results[layer][0], results[layer][1], self.task.upper())))
+
+        else:
+            print(f"Training classifier on embeddings from layer {self.layer}...")
+            clf = SplitClassifier(X={'train': task_embed['train']['X'][self.layer],
+                                     'valid': task_embed['dev']['X'][self.layer],
+                                     'test': task_embed['test']['X'][self.layer]},
                                   y={'train': task_embed['train']['y'],
                                      'valid': task_embed['dev']['y'],
                                      'test': task_embed['test']['y']},
                                   config=config_classifier)
 
             devacc, testacc, predictions = clf.run()
-            results[layer] = (devacc, testacc, predictions)
-
-        for k in range(1, 13):
-            print(('\nDev acc : %.1f Test acc : %.1f for %s classification\n' % (
-            results[k][0], results[k][1], self.task.upper())))
+            results[self.layer] = (devacc, testacc, predictions)
+            print(('\nDev acc : %.1f Test acc : %.1f for %s classification\n' % (results[self.layer][0], results[self.layer][1], self.task.upper())))
 
         return results
