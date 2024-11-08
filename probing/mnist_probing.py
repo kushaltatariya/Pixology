@@ -32,6 +32,7 @@ def batcher(model, batch):
     attention_mask = [get_attention_mask(1, 1) for i in encodings]
     mask = torch.stack(attention_mask).cuda()
     batch = torch.stack(encodings).cuda()
+    print("Computing embeddings...")
     with torch.no_grad():
         outputs, pooled_output, hidden_states, _ = model(batch, attention_mask=mask, return_dict=False)
 
